@@ -43,7 +43,7 @@ public class ProductController : ControllerBase
         return new OkResult();
     }
 
-    [HttpPost]
+    [HttpPut]
     public IActionResult Update(UpdateProductArgument argument)
     {
         _service.Update(argument);
