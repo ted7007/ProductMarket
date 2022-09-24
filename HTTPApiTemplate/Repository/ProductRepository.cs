@@ -1,4 +1,5 @@
-﻿using HTTPApiTemplate.Models;
+﻿using AutoMapper;
+using HTTPApiTemplate.Models;
 using HTTPApiTemplate.Repository;
 using HTTPApiTemplate.Repository.Argument;
 using Microsoft.AspNetCore.DataProtection.Repositories;
@@ -7,37 +8,42 @@ namespace HTTPApiTemplate.Repository;
 
 public class ProductService : IRepository<Product, CreateProductArgument, UpdateProductArgument>
 {
-                                  
-    public List<Product> Products { get; set; }
+    private readonly ApplicationContext _context;
+    private readonly IMapper _mapper;
 
-    public ProductService()
+    public ProductService(ApplicationContext context, IMapper mapper)
     {
-        Products = new List<Product>();
+        _mapper = mapper;
+        _context = context;
     }
-    public Product Create(CreateProductArgument product)
+    public Product Create(CreateProductArgument argument)
     {
-        Products.Add(new Product());
+        //todo async methods
+        var res = _context.Products.Add(_mapper.Map<CreateProductArgument, Product>(argument));
+        _context.SaveChanges();
         
-        return Products.Last();
+        return res.Entity;
     }
 
     public IEnumerable<Product> GetAll()
     {
-        return Products;
+        return _context.Products.ToList();
     }
 
     public Product Get(Guid id)
     {
-        return Products.Find(p => p.Id == id) ?? throw new InvalidOperationException();
+        return _context.Products.Find(id) ?? throw new InvalidOperationException();
     }
 
     public void Delete(Guid id)
     {
-        Products.Remove(Get(id));
+        _context.Products.Remove(Get(id));
+        _context.SaveChanges();
     }
 
-    public void Update(UpdateProductArgument product)
+    public void Update(UpdateProductArgument argument)
     {
-        throw new NotImplementedException();
+        _context.Products.Update(_mapper.Map<UpdateProductArgument, Product>(argument));
+        _context.SaveChanges();
     }
 }

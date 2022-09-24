@@ -13,7 +13,13 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MySQLOptions:Server":"127.0.0.1",
+        "MySQLOptions:Port":"3308",
+        "MySQLOptions:DatabaseName":"TemplateDataBase",
+        "MySQLOptions:UserName":"root",
+        "MySQLOptions:Password":"password"
+        
       }
     },
     "IIS Express": {
