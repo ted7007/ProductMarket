@@ -1,32 +1,19 @@
 using System.Data.Common;
 using System.Reflection;
-using HTTPApiTemplate.Config;
 using HTTPApiTemplate.Models;
 using HTTPApiTemplate.Repository;
 using HTTPApiTemplate.Repository.Argument;
 using Microsoft.EntityFrameworkCore;
+using ProductMarket.Config;
+
 
 var builder = WebApplication.CreateBuilder(args);
-                       //todo comments
-
-#region mysql connection string  build
-var MySQLOptions =
-    builder.Configuration.GetSection(HTTPApiTemplate.Config.MySQLOptions.OptionName)
-                         .Get<MySQLOptions>();
-DbConnectionStringBuilder connectionStringBuilder = new DbConnectionStringBuilder();
-connectionStringBuilder.Add("Server", MySQLOptions.Server);
-connectionStringBuilder.Add("Port", MySQLOptions.Port);
-connectionStringBuilder.Add("User", MySQLOptions.UserName);
-connectionStringBuilder.Add("Database", MySQLOptions.DatabaseName);
-connectionStringBuilder.Add("Password", MySQLOptions.Password);
 
 
-#endregion
-
-var connectionString =connectionStringBuilder.ConnectionString;
+var connectionString = GetConnectionString(builder.Environment.EnvironmentName, builder);
 
 builder.Services.AddDbContext<ApplicationContext>(options =>
-    options.UseMySql(connectionString,ServerVersion.AutoDetect(connectionString)));
+    options.UseNpgsql(connectionString));
 builder.Services.AddScoped
     <IRepository<Product, CreateProductArgument, UpdateProductArgument>, ProductService>();
 builder.Services.AddControllers();
@@ -38,7 +25,30 @@ app.MapControllers();
 app.MapGet("/", () => $"{app.Environment.EnvironmentName}");
 
 app.Run();
-                                            
+
+string? GetConnectionString(string stage, WebApplicationBuilder hostBuilder)
+{
+    switch (stage)
+    {
+        case "Development":
+            var dataBaseOptions =
+                hostBuilder.Configuration.GetSection(DataBaseOptions.OptionName)
+                    .Get<DataBaseOptions>();
+            if (dataBaseOptions is null)
+                throw new ArgumentNullException(nameof(dataBaseOptions));
+            DbConnectionStringBuilder connectionStringBuilder = new DbConnectionStringBuilder();
+            connectionStringBuilder.Add("Host", dataBaseOptions.Server);
+            connectionStringBuilder.Add("Port", dataBaseOptions.Port);
+            connectionStringBuilder.Add("Username", dataBaseOptions.UserName);
+            connectionStringBuilder.Add("Database", dataBaseOptions.DatabaseName);
+            connectionStringBuilder.Add("Password", dataBaseOptions.Password);
+            return connectionStringBuilder.ConnectionString;
+            break;
+        default:
+            return null;
+
+    }
+}
 /*  todo
  
  * global logging

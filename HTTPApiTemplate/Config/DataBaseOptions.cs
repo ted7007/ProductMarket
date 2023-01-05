@@ -1,8 +1,8 @@
 ﻿namespace HTTPApiTemplate.Config;
 
-public class MySQLOptions
+public class DataBaseOptions
 {
-    public const string OptionName = "MySQLOptions";
+    public const string OptionName = "DataBaseOptions";
     
     public string Server { get; set; }
     
