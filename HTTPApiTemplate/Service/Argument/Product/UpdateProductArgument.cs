@@ -1,4 +1,4 @@
-﻿namespace HTTPApiTemplate.Repository.Argument;
+﻿namespace HTTPApiTemplate.Service.Argument.Product;
 
 public class UpdateProductArgument
 {

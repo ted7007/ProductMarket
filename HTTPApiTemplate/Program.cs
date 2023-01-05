@@ -2,9 +2,10 @@ using System.Data.Common;
 using System.Reflection;
 using HTTPApiTemplate.Models;
 using HTTPApiTemplate.Repository;
-using HTTPApiTemplate.Repository.Argument;
 using Microsoft.EntityFrameworkCore;
-using ProductMarket.Config;
+using HTTPApiTemplate.Config;
+using HTTPApiTemplate.Repository.Product;
+using HTTPApiTemplate.Service;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,8 +15,8 @@ var connectionString = GetConnectionString(builder.Environment.EnvironmentName, 
 
 builder.Services.AddDbContext<ApplicationContext>(options =>
     options.UseNpgsql(connectionString));
-builder.Services.AddScoped
-    <IRepository<Product, CreateProductArgument, UpdateProductArgument>, ProductService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddControllers();
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
@@ -54,8 +55,6 @@ string? GetConnectionString(string stage, WebApplicationBuilder hostBuilder)
  * global logging
  * global exception handler
  * authorization & authentification
- * automapper
- * Data Access Layer(?) Unity repo?
  
  
 */
